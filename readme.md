@@ -1,0 +1,1 @@
+python predict.py --vegetable [veg name] --model [model name] --week [how many weeks]
