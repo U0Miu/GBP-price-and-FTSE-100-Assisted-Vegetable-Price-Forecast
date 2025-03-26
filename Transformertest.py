@@ -71,25 +71,23 @@ val_series = [ts[-64:] for ts in target_scaled]
 train_cov = [series_market_scaled[:-64]] * 4
 val_cov = [series_market_scaled[-64:]] * 4
 
-# 参数网格搜索和可视化部分
 param_grid = {
-    'd_model': [32, 64, 128],  # 测试不同的模型维度
-    'nhead': [2, 4]            # 测试不同的注意力头数
+    'd_model': [32, 64, 128], 
+    'nhead': [2, 4]            
     
 }
 results = []
 
-# 遍历所有参数组合
 for d_model in param_grid['d_model']:
     for nhead in param_grid['nhead']:
         print(f"\nTraining with d_model={d_model}, nhead={nhead}")
         
-        # 初始化模型（使用不同参数）
+        
         model = TransformerModel(
             input_chunk_length=12,
             output_chunk_length=24,
             batch_size=32,
-            n_epochs=10,  # 减少训练轮次以加快演示速度
+            n_epochs=10,  
             d_model=d_model,
             nhead=nhead,
             num_encoder_layers=2,
@@ -99,7 +97,7 @@ for d_model in param_grid['d_model']:
             activation="gelu",
             optimizer_kwargs={"lr": 0.001},
             model_name=f"transformer_d{d_model}_h{nhead}",
-            save_checkpoints=False,  # 禁用检查点保存以节省空间
+            save_checkpoints=False,  
             force_reset=True,
             **generate_torch_kwargs()
         )
