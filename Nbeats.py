@@ -18,10 +18,6 @@ logging.disable(logging.CRITICAL)
 import warnings
 warnings.filterwarnings("ignore")
 
-# 设置随机种子
-torch.manual_seed(1)
-np.random.seed(1)
-
 def generate_torch_kwargs():
     return {
         "pl_trainer_kwargs": {
@@ -30,7 +26,7 @@ def generate_torch_kwargs():
         }
     }
 
-# 加载数据并创建时间序列
+# Load data and create the time series
 
 series_gbp = TimeSeries.from_csv("datasets/market/GBP2USD.csv", time_col="week")
 series_ftse = TimeSeries.from_csv("datasets/market/FTSE100.csv", time_col="week")
@@ -39,25 +35,25 @@ series_onions = TimeSeries.from_csv("datasets/vegetables/onions_prices.csv", tim
 series_cabbage = TimeSeries.from_csv("datasets/vegetables/cabbage_prices.csv", time_col="week")
 series_lettuce = TimeSeries.from_csv("datasets/vegetables/lettuce_prices.csv", time_col="week")
 
-# 数据标准化
-# 初始化每个蔬菜的Scaler
+# Data standardization
+# Initialize the Scaler for each vegetable
 scaler_carrots = Scaler()
 scaler_onions = Scaler()
 scaler_cabbage = Scaler()
 scaler_lettuce = Scaler()
 
-# 标准化蔬菜价格数据
+# Standardized vegetable price
 series_carrots_scaled = scaler_carrots.fit_transform(series_carrots)
 series_onions_scaled = scaler_onions.fit_transform(series_onions)
 series_cabbage_scaled = scaler_cabbage.fit_transform(series_cabbage)
 series_lettuce_scaled = scaler_lettuce.fit_transform(series_lettuce)
 
-# 合并并标准化市场数据
+# Merge and standardize market data.
 series_market = concatenate([series_gbp, series_ftse], axis=1)
 scaler_market = Scaler()
 series_market_scaled = scaler_market.fit_transform(series_market)
 
-# 创建训练集和验证集
+# Create a training set and a validation set
 target_scaled = [
     series_carrots_scaled,
     series_onions_scaled,
@@ -65,7 +61,7 @@ target_scaled = [
     series_lettuce_scaled
 ]
 
-# 按80-20比例分割数据
+# Split the data in an 80-20 ratio.
 # Split each vegetable series along time dimension
 train_series = [ts[:-64] for ts in target_scaled]
 val_series = [ts[-64:] for ts in target_scaled]
@@ -74,7 +70,7 @@ val_series = [ts[-64:] for ts in target_scaled]
 train_cov = [series_market_scaled[:-64]] * 4
 val_cov = [series_market_scaled[-64:]] * 4
 
-# 初始化Transformer模型
+# Initialize the Nbeats model
 model = NBEATSModel(
     input_chunk_length=20,  # Number of past time steps
     output_chunk_length=10,  # Number of future time steps to predict
@@ -83,7 +79,7 @@ model = NBEATSModel(
     **generate_torch_kwargs(),
 )
 
-# 训练模型
+# Training model
 model.fit(
     series=train_series,
     past_covariates=train_cov,
@@ -92,7 +88,7 @@ model.fit(
     verbose=True
 )
 
-# 保存模型和scaler
+# Save the model and scaler.
 model.save("models/nbeats/vegetable_nbeats.pth")
 with open("models/nbeats/scalers.pkl", "wb") as f:
     pickle.dump({
