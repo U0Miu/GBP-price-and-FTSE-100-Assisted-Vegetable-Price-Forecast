@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import os
 from darts import TimeSeries, concatenate
 from darts.dataprocessing.transformers import Scaler
 from darts.models import TransformerModel
@@ -26,14 +27,16 @@ def generate_torch_kwargs():
         }
     }
 
+_DEFAULT_PATH = "/Users/www/Desktop/www/codes/GBP-price-and-FTSE-100-Assisted-Vegetable-Price-Forecast-main/"
+
 # Load data and create the time series
 
-series_gbp = TimeSeries.from_csv("datasets/market/GBP2USD.csv", time_col="week")
-series_ftse = TimeSeries.from_csv("datasets/market/FTSE100.csv", time_col="week")
-series_carrots = TimeSeries.from_csv("datasets/vegetables/carrots_prices.csv", time_col="week")
-series_onions = TimeSeries.from_csv("datasets/vegetables/onions_prices.csv", time_col="week")
-series_cabbage = TimeSeries.from_csv("datasets/vegetables/cabbage_prices.csv", time_col="week")
-series_lettuce = TimeSeries.from_csv("datasets/vegetables/lettuce_prices.csv", time_col="week")
+series_gbp = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/market/GBP2USD.csv", time_col="week")
+series_ftse = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/market/FTSE100.csv", time_col="week")
+series_carrots = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/vegetables/carrots_prices.csv", time_col="week")
+series_onions = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/vegetables/onions_prices.csv", time_col="week")
+series_cabbage = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/vegetables/cabbage_prices.csv", time_col="week")
+series_lettuce = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/vegetables/lettuce_prices.csv", time_col="week")
 
 # Data standardization
 # Initialize the Scaler for each vegetable
@@ -100,8 +103,10 @@ model.fit(
 )
 
 # Save the model and scaler.
-model.save("models/transformer/vegetable_transformer.pth")
-with open("models/transformer/scalers.pkl", "wb") as f:
+model_dir = "models/transformer/"
+os.makedirs(model_dir, exist_ok=True)
+model.save(model_dir +"/vegetable_transformer.pth")
+with open(model_dir +"/scalers.pkl", "wb") as f:
     pickle.dump({
         'carrots': scaler_carrots,
         'onions': scaler_onions,
@@ -109,4 +114,3 @@ with open("models/transformer/scalers.pkl", "wb") as f:
         'lettuce': scaler_lettuce,
         'market': scaler_market
     }, f)
-
