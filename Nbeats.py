@@ -63,18 +63,18 @@ target_scaled = [
 
 # Split the data in an 80-20 ratio.
 # Split each vegetable series along time dimension
-train_series = [ts[:-64] for ts in target_scaled]
-val_series = [ts[-64:] for ts in target_scaled]
+train_series = [ts[:-24] for ts in target_scaled]
+val_series = [ts[-24:] for ts in target_scaled]
 
 # Split covariates along time dimension
-train_cov = [series_market_scaled[:-64]] * 4
-val_cov = [series_market_scaled[-64:]] * 4
+train_cov = [series_market_scaled[:-24]] * 4
+val_cov = [series_market_scaled[-24:]] * 4
 
 # Initialize the Nbeats model
 model = NBEATSModel(
-    input_chunk_length=20,  # Number of past time steps
-    output_chunk_length=10,  # Number of future time steps to predict
-    n_epochs=10,
+    input_chunk_length=48,  # Number of past time steps
+    output_chunk_length=24,  # Number of future time steps to predict
+    n_epochs=100,
     random_state=0,
     **generate_torch_kwargs(),
 )
