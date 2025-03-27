@@ -95,15 +95,15 @@ val_veg4 = val_veg4.slice_intersect(val_pound).slice_intersect(val_stock)
 past_train = train_pound.stack(train_stock)
 past_val = val_pound.stack(val_stock)
 
-# 模型超参数
+# Model Hyperparameters
 input_chunk_length = 48
 output_chunk_length = 24
 
-# 模型保存目录
+# Model Saving Path
 model_dir = "models/nbeats/"
 os.makedirs(model_dir, exist_ok=True)
 
-# 定义和训练每个蔬菜的模型
+# Define, train and save a model for each vegetable
 # Initialize NBEATS multivariate model
 model_veg1 = NBEATSModel(input_chunk_length=input_chunk_length, output_chunk_length=output_chunk_length, n_epochs=100)
 # Fit the model using only "past_covariates"(train_pound and train_stock)
