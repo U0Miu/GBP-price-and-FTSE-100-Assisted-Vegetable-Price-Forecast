@@ -13,6 +13,8 @@ MODEL_MAP = {
     'nbeats': NBEATSModel
 }
 
+_DEFAULT_PATH = "/GBP-price-and-FTSE-100-Assisted-Vegetable-Price-Forecast-main/"
+
 def main(vegetable_name, model_type='transformer', week = 24):
     # Create a dedicated result directory for the model.
     os.makedirs(f"results/{model_type}", exist_ok=True)
@@ -43,17 +45,17 @@ def main(vegetable_name, model_type='transformer', week = 24):
 
 def load_market_data():
     """Load and merge market data."""
-    series_gbp = TimeSeries.from_csv("datasets/market/GBP2USD.csv", time_col="week")
-    series_ftse = TimeSeries.from_csv("datasets/market/FTSE100.csv", time_col="week")
+    series_gbp = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/market/GBP2USD.csv", time_col="week")
+    series_ftse = TimeSeries.from_csv(_DEFAULT_PATH +"datasets/market/FTSE100.csv", time_col="week")
     return concatenate([series_gbp, series_ftse], axis=1)
 
 def load_vegetable_data(vegetable_name):
     """Load the corresponding data based on the vegetable name."""
     file_map = {
-        'carrots': 'datasets/vegetables/carrots_prices.csv',
-        'onions': 'datasets/vegetables/onions_prices.csv',
-        'cabbage': 'datasets/vegetables/cabbage_prices.csv',
-        'lettuce': 'datasets/vegetables/lettuce_prices.csv'
+        'carrots': _DEFAULT_PATH +'datasets/vegetables/carrots_prices.csv',
+        'onions': _DEFAULT_PATH +'datasets/vegetables/onions_prices.csv',
+        'cabbage': _DEFAULT_PATH +'datasets/vegetables/cabbage_prices.csv',
+        'lettuce': _DEFAULT_PATH +'datasets/vegetables/lettuce_prices.csv'
     }
     return TimeSeries.from_csv(file_map[vegetable_name], time_col="week")
 
